@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+:root {
+  --font-anton: "Anton", sans-serif;
+  --font-archivo: "Archivo", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #0f0b1f;
+  font-family: var(--font-archivo);
+  -webkit-font-smoothing: antialiased;
+}

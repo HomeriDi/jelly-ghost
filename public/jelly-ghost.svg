@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-label="A glossy jelly ghost">
+  <defs>
+    <!-- Milky mint where it faces you, deep teal toward the edges (matches the 3D shader). -->
+    <radialGradient id="body" cx="46%" cy="40%" r="62%">
+      <stop offset="0" stop-color="#c9f2e6"/>
+      <stop offset="0.62" stop-color="#a7e3d4"/>
+      <stop offset="0.9" stop-color="#4fb3a8"/>
+      <stop offset="1" stop-color="#2a8a86"/>
+    </radialGradient>
+    <linearGradient id="tail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.62" stop-color="#1fb3a0" stop-opacity="0"/>
+      <stop offset="1" stop-color="#1fb3a0" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff7fd6"/>
+      <stop offset="0.55" stop-color="#8ff5e2"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="50%" cy="48%" r="50%">
+      <stop offset="0.7" stop-color="#5ff0d8" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#5ff0d8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pool" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#c8aaff" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#c8aaff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#0c061c" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#0c061c" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Domed head, gently flared body leaning right, six rounded drips. -->
+    <path id="ghost" d="M196 44
+      C120 44 76 104 76 180
+      L80 330
+      C82 372 92 392 110 398
+      C126 403 136 392 148 380
+      C160 396 172 408 188 406
+      C204 404 210 388 220 378
+      C232 396 246 410 262 406
+      C278 402 282 386 290 372
+      C300 388 314 398 328 390
+      C340 382 338 360 332 330
+      L318 180
+      C316 104 272 44 196 44Z"/>
+  </defs>
+  <ellipse cx="206" cy="448" rx="190" ry="26" fill="url(#pool)"/>
+  <ellipse cx="214" cy="446" rx="118" ry="14" fill="url(#shadow)"/>
+  <ellipse cx="204" cy="230" rx="176" ry="210" fill="url(#aura)"/>
+  <use href="#ghost" fill="url(#body)"/>
+  <use href="#ghost" fill="url(#tail)"/>
+  <use href="#ghost" fill="none" stroke="url(#rim)" stroke-opacity="0.55" stroke-width="3"/>
+  <!-- Glossy highlights -->
+  <ellipse cx="146" cy="104" rx="30" ry="14" fill="#fff" opacity="0.75" transform="rotate(-32 146 104)"/>
+  <ellipse cx="206" cy="84" rx="9" ry="6" fill="#fff" opacity="0.6"/>
+  <rect x="196" y="140" width="16" height="30" rx="6" fill="#fff" opacity="0.35"/>
+  <!-- Eyes -->
+  <ellipse cx="166" cy="188" rx="13" ry="18" fill="#160f24"/>
+  <ellipse cx="232" cy="188" rx="13" ry="18" fill="#160f24"/>
+  <ellipse cx="162" cy="181" rx="4" ry="5" fill="#fff" opacity="0.85"/>
+  <ellipse cx="228" cy="181" rx="4" ry="5" fill="#fff" opacity="0.85"/>
+</svg>
