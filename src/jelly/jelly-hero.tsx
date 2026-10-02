@@ -18,12 +18,14 @@ function hasWebGL() {
 export function JellyHero() {
   const heroRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<JellyController | null>(null);
   const visibleRef = useRef(true);
   const [status, setStatus] = useState<Status>("loading");
   const [touched, setTouched] = useState(false);
   const [debug, setDebug] = useState(false);
   const [controller, setController] = useState<JellyController | null>(null);
+  const [safeTop, setSafeTop] = useState(0);
 
   useEffect(() => {
     let disposed = false;
@@ -75,6 +77,23 @@ export function JellyHero() {
     };
   }, []);
 
+  // Where the text block ends: on stacked (phone/portrait) layouts the ghost
+  // is fitted into the space below it, so it never sits behind the buttons.
+  useEffect(() => {
+    const hero = heroRef.current;
+    const text = textRef.current;
+    if (!hero || !text) return;
+    const measure = () => setSafeTop(text.getBoundingClientRect().bottom - hero.getBoundingClientRect().top);
+    const ro = new ResizeObserver(measure);
+    ro.observe(hero);
+    ro.observe(text);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    controller?.setSafeTop(safeTop);
+  }, [controller, safeTop]);
+
   // Hidden debug panel: add ?debug to the URL, or press Shift+D.
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("debug")) queueMicrotask(() => setDebug(true));
@@ -99,7 +118,8 @@ export function JellyHero() {
       {/* Static fallback: only when WebGL is unavailable (or the scene is very slow to start). */}
       <div
         aria-hidden={status !== "fallback"}
-        className={`pointer-events-none absolute inset-x-0 bottom-[6%] top-[42%] flex justify-center transition-opacity duration-700 md:inset-y-[10%] md:left-[50%] md:right-[2%] ${
+        style={{ "--safe-top": `${safeTop + 12}px` } as React.CSSProperties}
+        className={`pointer-events-none absolute inset-x-0 bottom-16 top-(--safe-top) flex justify-center transition-opacity duration-700 wide:inset-y-[10%] wide:left-[50%] wide:right-[2%] ${
           status === "fallback" ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -131,7 +151,7 @@ export function JellyHero() {
           </a>
         </header>
 
-        <div className="mt-10 max-w-xl md:mt-0 md:flex md:flex-1 md:flex-col md:justify-center">
+        <div ref={textRef} className="mt-8 max-w-xl wide:mt-0 wide:flex wide:flex-1 wide:flex-col wide:justify-center">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7ff0dc]">
             Myths · Legends · Ghost stories
           </p>
@@ -163,7 +183,7 @@ export function JellyHero() {
 
       {status === "ready" && (
         <p
-          className={`pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white/80 backdrop-blur transition-opacity duration-700 md:left-[74%] ${
+          className={`pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white/80 backdrop-blur transition-opacity duration-700 wide:left-[74%] ${
             touched ? "opacity-0" : "opacity-100"
           }`}
         >

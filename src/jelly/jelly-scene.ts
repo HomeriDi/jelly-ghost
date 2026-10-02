@@ -10,6 +10,8 @@ export type JellyController = {
   getParams(): SoftBodyParams;
   reset(): void;
   setVisible(visible: boolean): void;
+  /** Stacked layout only: px from the top of the hero that the ghost must stay below (the text block). */
+  setSafeTop(px: number): void;
   getStats(): JellyStats;
   dispose(): void;
 };
@@ -23,6 +25,11 @@ type Options = {
 };
 
 const FOV = 30;
+/** Matches the `wide:` CSS variant in src/index.css. */
+export const WIDE_QUERY = "(min-width: 768px) and (min-aspect-ratio: 21/20)";
+const GHOST_H = 3.4; // world height to keep clear: body + drips + bob + aura
+const GHOST_W = 2.7;
+const HINT_SPACE = 64; // px kept free at the bottom for the "Grab the ghost" hint
 const FLOOR_Y = -1.8;
 
 export function createJellyScene(container: HTMLElement, opts: Options): JellyController {
@@ -209,26 +216,38 @@ export function createJellyScene(container: HTMLElement, opts: Options): JellyCo
   // --- Layout ----------------------------------------------------------------
   let width = 1;
   let height = 1;
+  let safeTop = 0;
+  const wideQuery = window.matchMedia(WIDE_QUERY);
   function layout() {
     width = Math.max(1, container.clientWidth);
     height = Math.max(1, container.clientHeight);
     const aspect = width / height;
-    const wide = aspect >= 1.05;
+    const wide = wideQuery.matches;
     const tan = Math.tan(THREE.MathUtils.degToRad(FOV / 2));
-    // Visible height at the ghost's depth, and where on screen its centre sits.
-    const visibleH = wide ? 5.8 : Math.max(6, 3.6 / aspect);
+    let visibleH: number; // world height visible at the ghost's depth
+    let offX = 0; // px to shift the ghost right of centre
+    let offY = 0; // px to shift the ghost below centre
+    if (wide) {
+      visibleH = 5.8;
+      offX = 0.24 * width;
+    } else {
+      // Fit the ghost into the space between the text block and the hint.
+      const top = Math.min(safeTop + 12, height * 0.7);
+      const region = Math.max(120, height - top - HINT_SPACE);
+      visibleH = Math.max(5, (GHOST_H * height) / region, GHOST_W / 0.85 / aspect);
+      offY = top + region / 2 - height / 2;
+    }
     const dist = visibleH / 2 / tan;
     camera.aspect = aspect;
     camera.position.set(0, 0.45, dist);
     camera.lookAt(0, -0.1, 0);
-    const offX = wide ? 0.24 * width : 0;
-    const offY = wide ? 0 : 0.17 * height;
     camera.setViewOffset(width, height, -offX, -offY, width, height);
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
   }
   const ro = new ResizeObserver(layout);
   ro.observe(container);
+  wideQuery.addEventListener("change", layout);
   layout();
 
   // --- Pointer interaction ---------------------------------------------------
@@ -469,6 +488,11 @@ export function createJellyScene(container: HTMLElement, opts: Options): JellyCo
       dragPlanes.clear();
       start();
     },
+    setSafeTop(px) {
+      if (Math.abs(px - safeTop) < 1) return;
+      safeTop = px;
+      layout();
+    },
     setVisible(v) {
       visible = v;
       if (v) start();
@@ -484,6 +508,7 @@ export function createJellyScene(container: HTMLElement, opts: Options): JellyCo
     dispose() {
       stop();
       ro.disconnect();
+      wideQuery.removeEventListener("change", layout);
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointermove", onPointerMove);

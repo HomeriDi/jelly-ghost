@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Side-by-side hero layout: wide enough AND landscape (kept in sync with WIDE_QUERY in src/jelly/jelly-scene.ts). */
+@custom-variant wide (@media (min-width: 768px) and (min-aspect-ratio: 21/20));
+
 :root {
   --font-anton: "Anton", sans-serif;
   --font-archivo: "Archivo", sans-serif;
